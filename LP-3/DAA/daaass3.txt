@@ -1,0 +1,59 @@
+import java.util.*;
+
+public class Knapsack {
+
+    static class Item {
+        int weight, value;
+        double ratio;
+        Item(int weight, int value) {
+            this.weight = weight;
+            this.value = value;
+            this.ratio = (double) value / weight;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of items: ");
+        int n = sc.nextInt();
+
+        Item[] items = new Item[n];
+
+        for (int i = 0; i < n; i++) {
+            System.out.print("Enter weight of item " + (i + 1) + ": ");
+            int w = sc.nextInt();
+            System.out.print("Enter value of item " + (i + 1) + ": ");
+            int v = sc.nextInt();
+            items[i] = new Item(w, v);
+        }
+
+        System.out.print("Enter capacity of knapsack: ");
+        int capacity = sc.nextInt();
+
+        // GREEDY STEP: sort by value/weight ratio, descending
+        Arrays.sort(items, (a, b) -> Double.compare(b.ratio, a.ratio));
+
+        double totalValue = 0;
+        int remaining = capacity;
+
+        for (Item item : items) {
+            if (remaining <= 0)
+                break;
+
+            if (item.weight <= remaining) {
+                // take whole item
+                totalValue += item.value;
+                remaining -= item.weight;
+            } else {
+                // take fraction that fits
+                totalValue += item.value * ((double) remaining / item.weight);
+                remaining = 0;
+            }
+        }
+
+        System.out.printf("Maximum value obtained: %.2f\n", totalValue);
+
+        sc.close();
+    }
+}

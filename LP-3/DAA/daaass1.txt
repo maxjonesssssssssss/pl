@@ -1,0 +1,65 @@
+import java.util.Scanner;
+
+public class fibonacci {
+
+    // ---------- Non-Recursive (Iterative) Method ----------
+    static void fibonacciIterative(int n) {
+        int a = 0, b = 1, c;
+        System.out.print("Iterative Fibonacci Series: ");
+
+        if (n >= 1) System.out.print(a + " ");
+        if (n >= 2) System.out.print(b + " ");
+
+        for (int i = 3; i <= n; i++) {
+            c = a + b;
+            System.out.print(c + " ");
+            a = b;
+            b = c;
+        }
+        System.out.println();
+    }
+
+    // ---------- Recursive Method ----------
+    static int fibonacciRecursive(int n) {
+        if (n == 0)
+            return 0;
+        if (n == 1)
+            return 1;
+        return fibonacciRecursive(n - 1) + fibonacciRecursive(n - 2);
+    }
+
+    // ---------- Main Method ----------
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter the number of terms: ");
+        int n = sc.nextInt();
+
+        // ---- Non-Recursive Call with Time Measurement ----
+        long startIter = System.nanoTime();
+        fibonacciIterative(n);
+        long endIter = System.nanoTime();
+
+        // ---- Recursive Call with Time Measurement ----
+        long startRec = System.nanoTime();
+        System.out.print("Recursive Fibonacci Series: ");
+        for (int i = 0; i < n; i++) {
+            System.out.print(fibonacciRecursive(i) + " ");
+        }
+        System.out.println();
+        long endRec = System.nanoTime();
+
+        // ---- Time Comparison Output ----
+        System.out.println("\n----- Execution Time Comparison -----");
+        System.out.println("Iterative Method Time : " + (endIter - startIter) + " ns");
+        System.out.println("Recursive Method Time : " + (endRec - startRec) + " ns");
+
+        // ---- Complexity Analysis (printed for reference) ----
+        System.out.println("\n----- Complexity Analysis -----");
+        System.out.println("Iterative  -> Time Complexity: O(n)   | Space Complexity: O(1)");
+        System.out.println("Recursive  -> Time Complexity: O(2^n) | Space Complexity: O(n) [call stack]");
+
+        sc.close();
+    }
+}
+

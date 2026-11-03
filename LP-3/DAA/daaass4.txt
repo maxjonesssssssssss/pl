@@ -1,0 +1,54 @@
+import java.util.*;
+
+public class Knapsack01 {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of items: ");
+        int n = sc.nextInt();
+
+        int[] weight = new int[n];
+        int[] value = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            System.out.print("Enter weight of item " + (i + 1) + ": ");
+            weight[i] = sc.nextInt();
+            System.out.print("Enter value of item " + (i + 1) + ": ");
+            value[i] = sc.nextInt();
+        }
+
+        System.out.print("Enter capacity of knapsack: ");
+        int capacity = sc.nextInt();
+
+        int[][] dp = new int[n + 1][capacity + 1];
+
+        // Build DP table bottom-up
+        for (int i = 0; i <= n; i++) {
+            for (int w = 0; w <= capacity; w++) {
+                if (i == 0 || w == 0) {
+                    dp[i][w] = 0;
+                } else if (weight[i - 1] <= w) {
+                    // max of (include item) or (exclude item)
+                    dp[i][w] = Math.max(value[i - 1] + dp[i - 1][w - weight[i - 1]], dp[i - 1][w]);
+                } else {
+                    dp[i][w] = dp[i - 1][w];
+                }
+            }
+        }
+
+        System.out.println("Maximum value obtained: " + dp[n][capacity]);
+
+        // Trace back to find selected items
+        System.out.println("Items Selected:");
+        int w = capacity;
+        for (int i = n; i > 0 && w > 0; i--) {
+            if (dp[i][w] != dp[i - 1][w]) {
+                System.out.println("Item " + i + " -> Weight: " + weight[i - 1] + ", Value: " + value[i - 1]);
+                w -= weight[i - 1];
+            }
+        }
+
+        sc.close();
+    }
+}

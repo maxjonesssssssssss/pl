@@ -1,0 +1,41 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract Bank {
+    address public owner;
+    mapping(address => uint256) private balances;
+
+    event Deposited(address indexed customer, uint256 amount, uint256 newBalance);
+    event Withdrawn(address indexed customer, uint256 amount, uint256 newBalance);
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        require(msg.value > 0, "Deposit amount must be greater than zero");
+        balances[msg.sender] += msg.value;
+        emit Deposited(msg.sender, msg.value, balances[msg.sender]);
+    }
+
+    function withdraw(uint256 _amount) public {
+        require(_amount > 0, "Withdrawal amount must be greater than zero");
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+
+        // Update balance BEFORE sending funds (prevents re-entrancy attacks)
+        balances[msg.sender] -= _amount;
+
+        (bool success, ) = payable(msg.sender).call{value: _amount}("");
+        require(success, "Transfer failed");
+
+        emit Withdrawn(msg.sender, _amount, balances[msg.sender]);
+    }
+
+    function showBalance() public view returns (uint256) {
+        return balances[msg.sender];
+    }
+
+    function contractBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+}

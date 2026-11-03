@@ -1,0 +1,61 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract StudentData {
+
+    // STRUCTURE: groups related student fields into one custom type
+    struct Student {
+        uint256 rollNo;
+        string name;
+        uint8 age;
+        string course;
+    }
+
+    // ARRAY: dynamic array that stores many Student structs
+    Student[] public students;
+
+    // Counts how many times the fallback function was triggered
+    uint256 public fallbackCount;
+
+    event StudentAdded(uint256 indexed rollNo, string name);
+    event FallbackCalled(address indexed sender, uint256 value, bytes data);
+
+    // Add a new student to the array
+    function addStudent(
+        uint256 _rollNo,
+        string memory _name,
+        uint8 _age,
+        string memory _course
+    ) public {
+        students.push(Student(_rollNo, _name, _age, _course));
+        emit StudentAdded(_rollNo, _name);
+    }
+
+    // Read one student by array index
+    function getStudent(uint256 _index)
+        public
+        view
+        returns (uint256, string memory, uint8, string memory)
+    {
+        require(_index < students.length, "Invalid index");
+        Student memory s = students[_index];
+        return (s.rollNo, s.name, s.age, s.course);
+    }
+
+    // Total number of students stored
+    function getTotalStudents() public view returns (uint256) {
+        return students.length;
+    }
+
+    // FALLBACK: runs when a call matches no existing function
+    fallback() external payable {
+        fallbackCount++;
+        emit FallbackCalled(msg.sender, msg.value, msg.data);
+    }
+
+    // RECEIVE: runs when plain ETH is sent with empty data
+    receive() external payable {
+        fallbackCount++;
+        emit FallbackCalled(msg.sender, msg.value, "");
+    }
+}
